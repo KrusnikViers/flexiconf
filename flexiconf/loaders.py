@@ -77,16 +77,19 @@ class ArgsLoader(BaseLoader):
         # We are looking only for parameters that look like [--]key=value
         for arg in cl_arguments:
             if '=' in arg:
-                self._insert_arg(config_data, arg)
+                self._insert_parameter(config_data, arg)
 
-    def _insert_arg(self, data: dict, arg: str):
+    @staticmethod
+    def _remove_prefix(parameter: str):
         prefix_counter = 0
-        for c in arg:
-            if c == '-':
-                prefix_counter += 1
-            else:
+        for x in parameter:
+            if x != '-':
                 break
-        key, value = arg[prefix_counter:].split('=', 1)
+            prefix_counter += 1
+        return parameter[prefix_counter:]
+
+    def _insert_parameter(self, data: dict, parameter: str):
+        key, value = self._remove_prefix(parameter).split('=', 1)
         if key and value:
             parent_dict, last_key = self.insert_path_in_dict(data, key)
             parent_dict[last_key] = value
