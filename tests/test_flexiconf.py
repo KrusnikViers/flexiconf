@@ -64,9 +64,6 @@ class TestCommon(TestCase):
 
     def test_wrong_gets(self):
         config = Configuration([])
-
-        def get_wrong_key():
-            return config.get('key')
-
-        self.assertRaises(KeyError, get_wrong_key)
+        self.assertRaises(KeyError, lambda: config.get('key'))
+        self.assertRaises(KeyError, lambda: config.get('a.b.c.key'))
         self.assertEqual("default_value", config.get('key', default="default_value"))
