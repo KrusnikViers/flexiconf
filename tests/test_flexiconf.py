@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from unittest import TestCase
+from unittest.mock import patch
 
 from flexiconf import *
 from flexiconf.utils import get_caller_path
@@ -61,6 +62,11 @@ class TestCommon(TestCase):
         self.assertEqual('d section', config.get_string('a.b.d.value'))
         self.assertEqual(15, config.get_int('a.b.d.devalue'))
         self.assertEqual("15", config.get('a.b.d.devalue'))
+
+    @patch('sys.argv', ['_', '--just-flag', 'A=15', '--b.C=test'])
+    def test_args_reading(self):
+        config = Configuration([ArgsLoader()])
+        self.assertEqual({'a': '15', 'b': {'c': 'test'}}, config.as_dict())
 
     def test_wrong_gets(self):
         config = Configuration([])

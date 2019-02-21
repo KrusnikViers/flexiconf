@@ -1,6 +1,7 @@
 import configparser
 import glob
 import json
+import sys
 from os import path
 
 from .utils import NOT_SET, get_caller_path, split_key_path
@@ -64,3 +65,27 @@ class IniLoader(BaseLoader):
                 section_dict, _ = self.insert_path_in_dict(config_data, section_name + '._')
                 read_section = self.normalize_dict(dict(config[section_name]))
                 section_dict.update(read_section)
+
+
+class ArgsLoader(BaseLoader):
+    def __init__(self):
+        super(ArgsLoader, self).__init__()
+
+    def load(self, config_data: dict):
+        cl_arguments = sys.argv[1:]
+        # We are looking only for parameters that look like [--]key=value
+        for arg in cl_arguments:
+            if '=' in arg:
+                self._insert_arg(config_data, arg)
+
+    def _insert_arg(self, data: dict, arg: str):
+        prefix_counter = 0
+        for c in arg:
+            if c == '-':
+                prefix_counter += 1
+            else:
+                break
+        key, value = arg[prefix_counter:].split('=', 1)
+        if key and value:
+            parent_dict, last_key = self.insert_path_in_dict(data, key)
+            parent_dict[last_key] = value

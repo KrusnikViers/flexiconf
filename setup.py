@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="flexiconf",
-    version="1.0.1",
+    version="1.0.2",
     author="Ivan Chernousov",
     author_email="krusnik.viers@gmail.com",
     description="Simple and flexible separation settings from code",
