@@ -68,6 +68,11 @@ class TestCommon(TestCase):
         config = Configuration([ArgsLoader()])
         self.assertEqual({'a': '15', 'b': {'c': 'test'}}, config.as_dict())
 
+    @patch('os.environ', {'FCONF_A': 'env_a', 'FCONF_B': '15', 'PATH': 'path1;path2'})
+    def test_env_reading(self):
+        config = Configuration([EnvLoader('FCONF_.*')])
+        self.assertEqual({'fconf_a': 'env_a', 'fconf_b': '15'}, config.as_dict())
+
     def test_wrong_gets(self):
         config = Configuration([])
         self.assertRaises(KeyError, lambda: config.get('key'))

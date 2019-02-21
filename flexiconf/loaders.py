@@ -1,8 +1,9 @@
 import configparser
 import glob
 import json
+import os
+import re
 import sys
-from os import path
 
 from .utils import NOT_SET, get_caller_path, split_key_path
 
@@ -26,7 +27,7 @@ class BaseLoader:
 
     @staticmethod
     def enumerate_files(config_files_pattern: str):
-        return [filename for filename in glob.iglob(config_files_pattern, recursive=True) if path.isfile(filename)]
+        return [filename for filename in glob.iglob(config_files_pattern, recursive=True) if os.path.isfile(filename)]
 
     @staticmethod
     def normalize_dict(data: dict):
@@ -37,7 +38,7 @@ class JsonLoader(BaseLoader):
     def __init__(self, config_files_pattern: str = NOT_SET):
         super(JsonLoader, self).__init__()
         if config_files_pattern is NOT_SET:
-            config_files_pattern = path.join(get_caller_path(), '**/*.json')
+            config_files_pattern = os.path.join(get_caller_path(), '**/*.json')
         self.files_pattern = config_files_pattern
 
     def load(self, config_data: dict):
@@ -53,7 +54,7 @@ class IniLoader(BaseLoader):
     def __init__(self, config_files_pattern: str = NOT_SET):
         super(IniLoader, self).__init__()
         if config_files_pattern is NOT_SET:
-            config_files_pattern = path.join(get_caller_path(), '**/*.ini')
+            config_files_pattern = os.path.join(get_caller_path(), '**/*.ini')
         self.files_pattern = config_files_pattern
 
     def load(self, config_data: dict):
@@ -89,3 +90,18 @@ class ArgsLoader(BaseLoader):
         if key and value:
             parent_dict, last_key = self.insert_path_in_dict(data, key)
             parent_dict[last_key] = value
+
+
+class EnvLoader(BaseLoader):
+    def __init__(self, key_pattern: str = None):
+        super(EnvLoader, self).__init__()
+        self.pattern = None
+        if key_pattern:
+            self.pattern = re.compile(key_pattern)
+
+    def load(self, config_data: dict):
+        for key, value in os.environ.items():
+            if self.pattern and not self.pattern.fullmatch(key):
+                continue
+            current_dict, last_key = self.insert_path_in_dict(config_data, key)
+            current_dict[last_key] = value
