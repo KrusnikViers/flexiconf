@@ -1,2 +1,2 @@
 from .configuration import Configuration
-from .loaders import BaseLoader, ConfigLoader, JsonLoader
+from .loaders import BaseLoader, IniLoader, JsonLoader

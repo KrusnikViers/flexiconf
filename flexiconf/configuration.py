@@ -10,6 +10,10 @@ class Configuration:
     def as_dict(self):
         return self.data
 
+    def exists(self, key_path: str):
+        parent_dict, key = self._get_dict_and_last_key(key_path)
+        return bool(parent_dict) and key in parent_dict
+
     def get_bool(self, key_path: str, default=NOT_SET):
         default_values = {
             "1": True, "true": True, "yes": True, "y": True, "on": True,

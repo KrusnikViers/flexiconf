@@ -48,9 +48,9 @@ class JsonLoader(BaseLoader):
                 config_data.update(new_data)
 
 
-class ConfigLoader(BaseLoader):
+class IniLoader(BaseLoader):
     def __init__(self, config_files_pattern: str = NOT_SET):
-        super(ConfigLoader, self).__init__()
+        super(IniLoader, self).__init__()
         if config_files_pattern is NOT_SET:
             config_files_pattern = path.join(get_caller_path(), '**/*.ini')
         self.files_pattern = config_files_pattern
