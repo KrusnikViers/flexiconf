@@ -23,6 +23,14 @@ class TestCommon(TestCase):
 
         self.assertRaises(NotImplementedError, create_configuration)
 
+    def test_set(self):
+        config = Configuration([JsonLoader(str(self.test_data_dir.joinpath('simple_1.json')))])
+        self.assertEqual({"subsection": {"b": 50, "c": 3.156}, "f": "20"}, config.as_dict())
+        config.set('z.w.u', 20)
+        config.set('subsection.b', 120, override_existing=False)
+        config.set('subsection.c', 120)
+        self.assertEqual({"subsection": {"b": 50, "c": 120}, "f": "20", "z": {"w": {"u": 20}}}, config.as_dict())
+
     def test_default_path(self):
         def constructor_frame():
             config = Configuration([JsonLoader(), IniLoader()])

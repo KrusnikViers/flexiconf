@@ -1,4 +1,5 @@
 from .utils import NOT_SET, no_cast, split_key_path
+from .loaders import BaseLoader
 
 
 class Configuration:
@@ -13,6 +14,11 @@ class Configuration:
     def exists(self, key_path: str):
         parent_dict, key = self._get_dict_and_last_key(key_path)
         return bool(parent_dict) and key in parent_dict
+
+    def set(self, key_path: str, value, override_existing=True):
+        current_dict, last_key = BaseLoader.insert_path_in_dict(self.data, key_path)
+        if last_key not in current_dict or override_existing:
+            current_dict[last_key] = value
 
     def get_bool(self, key_path: str, default=NOT_SET):
         default_values = {
